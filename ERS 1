@@ -1,1 +1,219 @@
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+ 
+#define MAX_EMPLOYEES 100
+ 
+/* ── Data Structure ── */
+struct Employee {
+    int    id;
+    char   name[50];
+    int    age;
+    char   department[30];
+    float  salary;
+};
+ 
+/* ── Global Storage ── */
+struct Employee employees[MAX_EMPLOYEES];
+int count = 0;   /* total number of records stored */
+ 
+/* ── Function Declarations ── */
+void addEmployee();
+void displayAll();
+void searchByID();
+void updateEmployee();
+void deleteEmployee();
+void printEmployee(struct Employee e);
+void printDivider();
+ 
+/* ══════════════════════════════════════════
+ *                  MAIN
+ * ══════════════════════════════════════════ */
+int main() {
+    int choice;
+ 
+    printf("\n╔══════════════════════════════════════╗");
+    printf("\n║      EMPLOYEE RECORD SYSTEM          ║");
+    printf("\n╚══════════════════════════════════════╝\n");
+ 
+    do {
+        printf("\n======= MENU =======\n");
+        printf("1. Add Employee\n");
+        printf("2. Display All Employees\n");
+        printf("3. Search Employee by ID\n");
+        printf("4. Update Employee\n");
+        printf("5. Delete Employee\n");
+        printf("6. Exit\n");
+        printf("====================\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+ 
+        switch (choice) {
+            case 1: addEmployee();     break;
+            case 2: displayAll();      break;
+            case 3: searchByID();      break;
+            case 4: updateEmployee();  break;
+            case 5: deleteEmployee();  break;
+            case 6: printf("\nExiting... Goodbye!\n\n"); break;
+            default: printf("\nInvalid choice! Please try again.\n");
+        }
+ 
+    } while (choice != 6);
+ 
+    return 0;
+}
+ 
+/* ══════════════════════════════════════════
+ *            ADD EMPLOYEE
+ * ══════════════════════════════════════════ */
+void addEmployee() {
+    if (count >= MAX_EMPLOYEES) {
+        printf("\nStorage full! Cannot add more employees.\n");
+        return;
+    }
+ 
+    struct Employee e;
+ 
+    printf("\n--- Add New Employee ---\n");
+    printf("Enter Employee ID   : ");
+    scanf("%d", &e.id);
+ 
+    /* Check for duplicate ID */
+    for (int i = 0; i < count; i++) {
+        if (employees[i].id == e.id) {
+            printf("Employee with ID %d already exists!\n", e.id);
+            return;
+        }
+    }
+ 
+    printf("Enter Name          : ");
+    scanf(" %[^\n]", e.name);   /* reads full name with spaces */
+ 
+    printf("Enter Age           : ");
+    scanf("%d", &e.age);
+ 
+    printf("Enter Department    : ");
+    scanf(" %[^\n]", e.department);
+ 
+    printf("Enter Salary        : ");
+    scanf("%f", &e.salary);
+ 
+    employees[count++] = e;
+    printf("\n✔ Employee added successfully!\n");
+}
+ 
+/* ══════════════════════════════════════════
+ *          DISPLAY ALL EMPLOYEES
+ * ══════════════════════════════════════════ */
+void displayAll() {
+    if (count == 0) {
+        printf("\nNo employee records found.\n");
+        return;
+    }
+ 
+    printf("\n--- All Employee Records (%d total) ---\n", count);
+    printDivider();
+ 
+    for (int i = 0; i < count; i++) {
+        printEmployee(employees[i]);
+        printDivider();
+    }
+}
+ 
+/* ══════════════════════════════════════════
+ *         SEARCH EMPLOYEE BY ID
+ * ══════════════════════════════════════════ */
+void searchByID() {
+    int id;
+    printf("\n--- Search Employee ---\n");
+    printf("Enter Employee ID to search: ");
+    scanf("%d", &id);
+ 
+    for (int i = 0; i < count; i++) {
+        if (employees[i].id == id) {
+            printf("\nEmployee Found:\n");
+            printDivider();
+            printEmployee(employees[i]);
+            printDivider();
+            return;
+        }
+    }
+ 
+    printf("\nEmployee with ID %d not found.\n", id);
+}
+ 
+/* ══════════════════════════════════════════
+ *          UPDATE EMPLOYEE
+ * ══════════════════════════════════════════ */
+void updateEmployee() {
+    int id;
+    printf("\n--- Update Employee ---\n");
+    printf("Enter Employee ID to update: ");
+    scanf("%d", &id);
+ 
+    for (int i = 0; i < count; i++) {
+        if (employees[i].id == id) {
+            printf("Employee found. Enter new details:\n");
+ 
+            printf("Enter New Name       : ");
+            scanf(" %[^\n]", employees[i].name);
+ 
+            printf("Enter New Age        : ");
+            scanf("%d", &employees[i].age);
+ 
+            printf("Enter New Department : ");
+            scanf(" %[^\n]", employees[i].department);
+ 
+            printf("Enter New Salary     : ");
+            scanf("%f", &employees[i].salary);
+ 
+            printf("\n✔ Employee updated successfully!\n");
+            return;
+        }
+    }
+ 
+    printf("\nEmployee with ID %d not found.\n", id);
+}
+ 
+/* ══════════════════════════════════════════
+ *          DELETE EMPLOYEE
+ * ══════════════════════════════════════════ */
+void deleteEmployee() {
+    int id;
+    printf("\n--- Delete Employee ---\n");
+    printf("Enter Employee ID to delete: ");
+    scanf("%d", &id);
+ 
+    for (int i = 0; i < count; i++) {
+        if (employees[i].id == id) {
+            /* Shift all records after this one to the left */
+            for (int j = i; j < count - 1; j++) {
+                employees[j] = employees[j + 1];
+            }
+            count--;
+            printf("\n✔ Employee with ID %d deleted successfully!\n", id);
+            return;
+        }
+    }
+ 
+    printf("\nEmployee with ID %d not found.\n", id);
+}
+ 
+/* ══════════════════════════════════════════
+ *         HELPER: PRINT ONE EMPLOYEE
+ * ══════════════════════════════════════════ */
+void printEmployee(struct Employee e) {
+    printf("  ID         : %d\n",   e.id);
+    printf("  Name       : %s\n",   e.name);
+    printf("  Age        : %d\n",   e.age);
+    printf("  Department : %s\n",   e.department);
+    printf("  Salary     : %.2f\n", e.salary);
+}
+ 
+/* ══════════════════════════════════════════
+ *         HELPER: PRINT DIVIDER LINE
+ * ══════════════════════════════════════════ */
+void printDivider() {
+    printf("  ------------------------------------\n");
+}
+ 
